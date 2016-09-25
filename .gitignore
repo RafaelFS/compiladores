@@ -50,5 +50,4 @@
 *.swp
 
 # Executables
-client
-server
+main
