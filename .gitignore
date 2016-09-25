@@ -1,0 +1,54 @@
+#
+# .gitignore
+#
+# PCS2056 - Linguagens e Compiladores
+# Pedro Napolitano Sant’Ana 	8041817
+# Rafael Freitas da Silva 	6480585
+#
+#
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+
+# pdf
+*.pdf
+
+# Documents
+*.doc*
+
+# Swp files
+*.swp
+
+# Executables
+client
+server
