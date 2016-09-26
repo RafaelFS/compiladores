@@ -1,5 +1,5 @@
 /*
-* lexico.h
+* token.c
 *
 * PCS2056 - Linguagens e Compiladores
 * Pedro Napolitano Sant’Ana 	8041817
@@ -7,7 +7,4 @@
 *
 */
 
-#include <stdio.h>
 #include "token.h"
-
-Token getNextToken(FILE *pointerToSourceFile);

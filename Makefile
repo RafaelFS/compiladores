@@ -7,7 +7,7 @@
 #
 #
 
-DEP=lexico.o sintatico.o
+DEP=lexico.o sintatico.o token.o
 CFLAGS=-Wall -g
 LIBS=
 CC=gcc

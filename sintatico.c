@@ -7,13 +7,15 @@
 *
 */
 #include <stdio.h>
+#include "token.h"
 #include "sintatico.h"
 #include "lexico.h"
 
 void compile(FILE *pointerToSourceFile) {
-	char currentCharacter = getNextToken(pointerToSourceFile);
-	while(currentCharacter != EOF){
-		printf("%c\n", currentCharacter);
-		currentCharacter = getNextToken(pointerToSourceFile);
+	Token currentToken = getNextToken(pointerToSourceFile);
+	printf("%c\n", *currentToken.value);
+	while(currentToken.class != EndOfFile){
+		printf("%c\n", *currentToken.value);
+		currentToken = getNextToken(pointerToSourceFile);
 	}
 }

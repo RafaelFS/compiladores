@@ -10,18 +10,24 @@
 #include <stdio.h>
 #include "lexico.h"
 
-
 int hasValidNumberOfReadCharacters(int numberOfReadCharacters);
 
-char getNextToken(FILE *pointerToSourceFile) {
+Token getNextToken(FILE *pointerToSourceFile) {
 	char currentCharacter;
+	Token currentToken;
+
 	int numberOfReadCharacters = fscanf(pointerToSourceFile, "%c", &currentCharacter);
 
 	if (hasValidNumberOfReadCharacters(numberOfReadCharacters)) {
-		return currentCharacter;
+		currentToken.class = Unknown;
 	} else {
-		return EOF;
+		currentCharacter = EOF;
+		currentToken.class = EndOfFile;
 	}
+
+	currentToken.value = &currentCharacter;
+
+	return currentToken;
 }
 
 int hasValidNumberOfReadCharacters(int numberOfReadCharacters) {
