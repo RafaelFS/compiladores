@@ -7,7 +7,6 @@
 *
 */
 #include <stdio.h>
-#include "token.h"
 #include "sintatico.h"
 #include "lexico.h"
 
