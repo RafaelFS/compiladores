@@ -12,7 +12,6 @@
 
 void compile(FILE *pointerToSourceFile) {
 	Token currentToken = getNextToken(pointerToSourceFile);
-	printf("%c\n", *currentToken.value);
 	while(currentToken.class != EndOfFile){
 		printf("%c\n", *currentToken.value);
 		currentToken = getNextToken(pointerToSourceFile);
