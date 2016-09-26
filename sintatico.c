@@ -10,7 +10,10 @@
 #include "sintatico.h"
 #include "lexico.h"
 
-void compile() {
-	printf("%s\n", "Testando sintatico");
-	getNextToken();
+void compile(FILE *pointerToSourceFile) {
+	char currentCharacter = getNextToken(pointerToSourceFile);
+	while(currentCharacter != EOF){
+		printf("%c\n", currentCharacter);
+		currentCharacter = getNextToken(pointerToSourceFile);
+	}
 }

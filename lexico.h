@@ -9,4 +9,4 @@
 
 #include <stdio.h>
 
-void getNextToken();
+char getNextToken(FILE *pointerToSourceFile);

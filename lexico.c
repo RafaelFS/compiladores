@@ -10,6 +10,20 @@
 #include <stdio.h>
 #include "lexico.h"
 
-void getNextToken() {
-	printf("%s\n", "Testando lexico");
+
+int hasValidNumberOfReadCharacters(int numberOfReadCharacters);
+
+char getNextToken(FILE *pointerToSourceFile) {
+	char currentCharacter;
+	int numberOfReadCharacters = fscanf(pointerToSourceFile, "%c", &currentCharacter);
+
+	if (hasValidNumberOfReadCharacters(numberOfReadCharacters)) {
+		return currentCharacter;
+	} else {
+		return EOF;
+	}
+}
+
+int hasValidNumberOfReadCharacters(int numberOfReadCharacters) {
+	return (numberOfReadCharacters > 0);
 }

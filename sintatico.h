@@ -7,4 +7,4 @@
 *
 */
 
-void compile();
+void compile(FILE *pointerToSourceFile);
