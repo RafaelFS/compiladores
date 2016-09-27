@@ -16,7 +16,6 @@
 #define STATE_CT_6 206
 #define STATE_CT_7 207
 #define STATE_CT_8 208
-#define STATE_CT_9 209
 #define STATE_ST_2 302
 #define STATE_ST_3 303
 #define STATE_ST_4 304
@@ -314,17 +313,7 @@ int lex(Token token, InputStr str) {
                 if (currentChar == '\\' || currentChar == '"' || currentChar == '\'' || currentChar == 'n' || currentChar == 't' || currentChar == 'r') {
                     incrementToken(token, currentChar);
                     advance(str, &currentChar);
-                    currentState = STATE_CT_9;
-                } else {
-                    return 0;
-                }
-            break;
-
-            case STATE_CT_9:
-                if (currentChar == '\'') {
-                    incrementToken(token, currentChar);
-                    advance(str, &currentChar);
-                    currentState = STATE_CT_7;
+                    currentState = STATE_CT_6;
                 } else {
                     return 0;
                 }
