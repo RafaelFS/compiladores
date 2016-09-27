@@ -70,11 +70,17 @@ int main() {
     while(1) {
         Token t = tokens[tokensFound];
 
-        if (lex(&t, &str)) {
+        int success = lex(&t, &str); 
+        str.pos--;        
+        if (success) {
             tokensFound++;
             printf("%s <size = %d, type = %d>\n", t.value, t.size, t.type);
-        } else {
-            printf("Failed with token '%s'\n", t.value);
+        } else { 
+            if(str.value[str.pos] == '\0'){
+                printf("%s\n", "Finished extracting tokens");
+            } else {
+                printf("Invalid character'%c' at position %d \n", str.value[str.pos], str.pos);
+            }
             break;
         }
     }
@@ -245,6 +251,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_ID_2;
                 } else {
+
                     // check keyword
                     return 1;    
                 }
@@ -256,8 +263,10 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_CT_2;
                 } else if (currentChar == '.') {
+                    incrementToken(token, currentChar);
                     currentState = STATE_CT_3;
                 } else {
+
                     return 1;
                 }
             break;
@@ -268,7 +277,9 @@ int lex(Token *token, InputStr *str) {
                     currentState = STATE_CT_4;
                 } else {
                     // if no digit was found after the '.', remove it from the token and return it, since it is a valid number
+                    (*str).pos--; 
                     (*token).size--;
+                    (*token).value[(*token).size] = '\0';
                     return 1;
                 }
             break;
@@ -278,6 +289,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_CT_4;
                 } else {
+
                     return 1;
                 }
             break;
@@ -354,6 +366,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_OP_2;
                 } else {
+
                     return 1;
                 }
             break;
@@ -363,6 +376,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_OP_2;
                 } else {
+
                     return 1;
                 }
             break;
