@@ -28,9 +28,6 @@
 #define STATE_OP_6 406
 #define STATE_PT_2 502
 
-const char LETTERS[52] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-const char DIGITS[10]  = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-const char ASCII[95]   = {' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~'};
 const char KEYWORDS[18][30] = { 
     {'t', 'y', 'p', 'e', 's'},
     {'i', 'n', 't'},
@@ -65,7 +62,7 @@ typedef struct _inputStr {
 
 int isLetter(char c);
 int isDigit(char c);
-int isAscii(char c);
+int isPrintableAscii(char c);
 int isKeyword(char string[30]);
 
 char advance(InputStr *str);
@@ -116,35 +113,27 @@ int main() {
 ///////////////
 
 int isLetter(char c) {
-    int i;
-
-    for (i = 0; i < 52; i++) {
-        if (c == LETTERS[i]) {
-            return 1;
-        }
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+        return 1;
+    } else {
+        return 0;
     }
-    return 0;
 }
 
 int isDigit(char c) {
-    int i;
-    for (i = 0; i < 10; i++) {
-        if (c == DIGITS[i]) {
-            return 1;
-        }
+    if (c >= '0' && c <= '9') {
+        return 1;
+    } else {
+        return 0;
     }
-    return 0;
 }
 
-int isAscii(char c) {
-    int i;
-
-    for (i = 0; i < 95; i++) {
-        if (c == ASCII[i]) {
-            return 1;
-        }
+int isPrintableAscii(char c) {
+    if (c >= ' ' && c <= '~') {
+        return 1;
+    } else {
+        return 0;
     }
-    return 0;
 }
 
 int isKeyword(char string[30]) {
@@ -331,7 +320,7 @@ int lex(Token *token, InputStr *str) {
             break;
 
             case STATE_CT_5:
-                if (currentChar != '\'' && currentChar != '\\' && isAscii(currentChar)) {
+                if (currentChar != '\'' && currentChar != '\\' && isPrintableAscii(currentChar)) {
                     incrementToken(token, currentChar);
                     currentState = STATE_CT_6;
                 } else if (currentChar == '\\') {
@@ -366,7 +355,7 @@ int lex(Token *token, InputStr *str) {
 
             // String
             case STATE_ST_2:
-                if (currentChar != '"' && currentChar != '\\' && isAscii(currentChar)) {
+                if (currentChar != '"' && currentChar != '\\' && isPrintableAscii(currentChar)) {
                     incrementToken(token, currentChar);
                     currentState = STATE_ST_2;
                 } else if (currentChar == '"') {
