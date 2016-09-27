@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <string.h>
 
 #define TYPE_IDENTIFIER 0
 #define TYPE_CONSTANT   1
 #define TYPE_STRING     2
 #define TYPE_OPERATOR   3
 #define TYPE_PUNCTUATOR 4
+#define TYPE_KEYWORD    5
 
 #define STATE_S      0
 #define STATE_CS_2   2
@@ -29,6 +31,26 @@
 const char LETTERS[52] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 const char DIGITS[10]  = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 const char ASCII[95]   = {' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~'};
+const char KEYWORDS[18][30] = { 
+    {'t', 'y', 'p', 'e', 's'},
+    {'i', 'n', 't'},
+    {'f', 'l', 'o', 'a', 't'},
+    {'b', 'o', 'o', 'l'},
+    {'c', 'h', 'a', 'r'},
+    {'s', 't', 'r', 'u', 'c', 't'},
+    {'g', 'l', 'o', 'b', 'a', 'l'},
+    {'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', 's'},
+    {'i', 'm', 'p', 'l', 'e', 'm', 'e', 'n', 't', 'a', 't', 'i', 'o', 'n'},
+    {'m', 'a', 'i', 'n'},
+    {'t', 'r', 'u', 'e'},
+    {'f', 'a', 'l', 's', 'e'},
+    {'i', 'f'},
+    {'e', 'l', 's', 'i', 'f'},
+    {'e', 'l', 's', 'e'},
+    {'w', 'h', 'i', 'l', 'e'},
+    {'p', 'r', 'i', 'n', 't'},
+    {'r', 'e', 'a', 'd'}
+};
 
 typedef struct _token {
     int type;
@@ -44,6 +66,7 @@ typedef struct _inputStr {
 int isLetter(char c);
 int isDigit(char c);
 int isAscii(char c);
+int isKeyword(char string[30]);
 
 char advance(InputStr *str);
 
@@ -70,8 +93,8 @@ int main() {
     while(1) {
         Token t = tokens[tokensFound];
 
-        int success = lex(&t, &str); 
-        str.pos--;        
+        int success = lex(&t, &str);
+
         if (success) {
             tokensFound++;
             printf("%s <size = %d, type = %d>\n", t.value, t.size, t.type);
@@ -124,6 +147,17 @@ int isAscii(char c) {
     return 0;
 }
 
+int isKeyword(char string[30]) {
+    int i;
+
+    for (i = 0; i < 18; i++) {
+        if (strcmp(string, KEYWORDS[i]) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 char advance(InputStr *str) {
     char c = (*str).value[(*str).pos];
     (*str).pos++;
@@ -139,12 +173,15 @@ int lex(Token *token, InputStr *str) {
     int currentState = STATE_S;
 
     char currentChar;
-    currentChar = advance(str);
 
     (*token).size = 0;
     (*token).value[0] = '\0';
 
-    while (1) {
+    int searchStatus = -1;
+
+    while (searchStatus != 0 && searchStatus != 1) {
+        currentChar = advance(str);
+
         switch(currentState) {
             // Initial state
             case STATE_S:
@@ -231,7 +268,7 @@ int lex(Token *token, InputStr *str) {
                             incrementToken(token, currentChar);
                             currentState = STATE_CT_2;
                         } else {
-                            return 0;
+                            searchStatus = 0;
                         }
                 }
             break;
@@ -251,9 +288,10 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_ID_2;
                 } else {
-
-                    // check keyword
-                    return 1;    
+                    if (isKeyword((*token).value)) {
+                        (*token).type = TYPE_KEYWORD;
+                    }
+                    searchStatus = 1;    
                 }
             break;
 
@@ -266,8 +304,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_CT_3;
                 } else {
-
-                    return 1;
+                    searchStatus = 1;
                 }
             break;
 
@@ -280,7 +317,7 @@ int lex(Token *token, InputStr *str) {
                     (*str).pos--; 
                     (*token).size--;
                     (*token).value[(*token).size] = '\0';
-                    return 1;
+                    searchStatus = 1;
                 }
             break;
 
@@ -289,8 +326,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_CT_4;
                 } else {
-
-                    return 1;
+                    searchStatus = 1;
                 }
             break;
 
@@ -299,9 +335,10 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_CT_6;
                 } else if (currentChar == '\\') {
+                    incrementToken(token, currentChar);
                     currentState = STATE_CT_8;
                 } else {
-                    return 0;
+                    searchStatus = 0;
                 }
             break;
 
@@ -310,12 +347,12 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_CT_7;
                 } else {
-                    return 0;
+                    searchStatus = 0;
                 }
             break;
 
             case STATE_CT_7:
-                return 1;
+                searchStatus = 1;
             break;
 
             case STATE_CT_8:
@@ -323,7 +360,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_CT_6;
                 } else {
-                    return 0;
+                    searchStatus = 0;
                 }
             break;
 
@@ -339,12 +376,12 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_ST_4;
                 } else {
-                    return 0;
+                    searchStatus = 0;
                 }
             break;
 
             case STATE_ST_3:
-                return 1;
+                searchStatus = 1;
             break;
 
             case STATE_ST_4:
@@ -352,13 +389,13 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_ST_2;
                 } else {
-                    return 0;
+                    searchStatus = 0;
                 }
             break;
 
             // Operator
             case STATE_OP_2:
-                return 1;
+                searchStatus = 1;
             break;
 
             case STATE_OP_3:
@@ -366,8 +403,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_OP_2;
                 } else {
-
-                    return 1;
+                    searchStatus = 1;
                 }
             break;
 
@@ -376,8 +412,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_OP_2;
                 } else {
-
-                    return 1;
+                    searchStatus = 1;
                 }
             break;
 
@@ -386,7 +421,7 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_OP_2;
                 } else {
-                    return 0;
+                    searchStatus = 0;
                 }
             break;
 
@@ -395,18 +430,20 @@ int lex(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_OP_2;
                 } else {
-                    return 0;
+                    searchStatus = 0;
                 }
             break;
 
             // Punctuator
             case STATE_PT_2:
-                return 1;
+                searchStatus = 1;
             break;
 
             default:
-                return 0;
+                searchStatus = 0;
         }
-        currentChar = advance(str);
     }
+
+    (*str).pos--;
+    return searchStatus;
 }
