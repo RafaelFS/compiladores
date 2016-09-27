@@ -49,7 +49,7 @@ char advance(InputStr *str);
 
 void incrementToken(Token *token, char currentChar);
 
-int lex(Token *ptoken, InputStr str);
+int lex(Token *token, InputStr *str);
 
 //////////
 // MAIN //
@@ -62,13 +62,22 @@ int main() {
     str.pos = 0;
 
     printf("Please type a segment of code: ");
-    scanf("%s", str.value);
+    fgets(str.value, 256, stdin);
 
-    Token t;
+    Token tokens[256];
+    int tokensFound = 0;
 
-    printf("%d \n", lex(&t, str));
+    while(1) {
+        Token t = tokens[tokensFound];
 
-    printf("%s (%d)\n", t.value, t.type);
+        if (lex(&t, &str)) {
+            tokensFound++;
+            printf("%s <size = %d, type = %d>\n", t.value, t.size, t.type);
+        } else {
+            printf("Failed with token '%s'\n", t.value);
+            break;
+        }
+    }
 
     return 0;
 }
@@ -118,29 +127,30 @@ char advance(InputStr *str) {
 void incrementToken(Token *token, char currentChar) {
     (*token).value[(*token).size] = currentChar;
     (*token).size++;
-    printf("%s\n", ((*token).value));
 }
 
-int lex(Token *token, InputStr str) {
+int lex(Token *token, InputStr *str) {
     int currentState = STATE_S;
 
     char currentChar;
-    currentChar = advance(&str);
+    currentChar = advance(str);
 
     (*token).size = 0;
+    (*token).value[0] = '\0';
 
     while (1) {
         switch(currentState) {
             // Initial state
             case STATE_S:
-
-                while (currentChar == ' ' || currentChar == '\t' || currentChar == '\r' || currentChar == '\n') {
-                    currentChar = advance(&str);
-                }
-
                 switch(currentChar) {
+                    case ' ':
+                    case '\t':
+                    case '\n':
+                    case '\r':
+                        currentState = STATE_S;
+                    break;
+
                     case '#':
-                        currentChar = advance(&str);
                         currentState = STATE_CS_2;
                     break;
 
@@ -150,7 +160,6 @@ int lex(Token *token, InputStr str) {
                     case '%':
                         (*token).type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
-                        currentChar = advance(&str);
                         currentState = STATE_OP_2;
                     break;
 
@@ -160,42 +169,36 @@ int lex(Token *token, InputStr str) {
                     case '!':
                         (*token).type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
-                        currentChar = advance(&str);
                         currentState = STATE_OP_3;
                     break;
 
                     case '*':
                         (*token).type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
-                        currentChar = advance(&str);
                         currentState = STATE_OP_4;
                     break;
 
                     case '|':
                         (*token).type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
-                        currentChar = advance(&str);
                         currentState = STATE_OP_5;
                     break;
 
                     case '&':
                         (*token).type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
-                        currentChar = advance(&str);
                         currentState = STATE_OP_6;
                     break;
 
                     case '\"':
                         (*token).type = TYPE_STRING;
                         incrementToken(token, currentChar);
-                        currentChar = advance(&str);
                         currentState = STATE_ST_2;
                     break;
 
                     case '\'':
                         (*token).type = TYPE_CONSTANT;
                         incrementToken(token, currentChar);
-                        currentChar = advance(&str);
                         currentState = STATE_CT_5;
                     break;
 
@@ -209,22 +212,17 @@ int lex(Token *token, InputStr str) {
                     case ',':
                         (*token).type = TYPE_PUNCTUATOR;
                         incrementToken(token, currentChar);
-                        currentChar = advance(&str);
                         currentState = STATE_PT_2;
                     break;
 
                     default:
-                    printf("%c", currentChar);
                         if (isLetter(currentChar)) {
-                            printf("Letra");
                             (*token).type = TYPE_IDENTIFIER;
                             incrementToken(token, currentChar);
-                            currentChar = advance(&str);
                             currentState = STATE_ID_2;
                         } else if (isDigit(currentChar)) {
                             (*token).type = TYPE_CONSTANT;
                             incrementToken(token, currentChar);
-                            currentChar = advance(&str);
                             currentState = STATE_CT_2;
                         } else {
                             return 0;
@@ -234,31 +232,30 @@ int lex(Token *token, InputStr str) {
 
             // Comments & Spacing
             case STATE_CS_2:
-                while (currentChar != '\r' && currentChar != '\n') {
-                    currentChar = advance(&str);
+                if (currentChar != '\r' && currentChar != '\n') {
+                    currentState = STATE_CS_2;
+                } else {
+                    currentState = STATE_S;   
                 }
-                currentState = STATE_S;
             break;
 
             // Identifier
             case STATE_ID_2:
-                while (isLetter(currentChar) == 1 || isDigit(currentChar) == 1) {
+                if (isLetter(currentChar) == 1 || isDigit(currentChar) == 1) {
                     incrementToken(token, currentChar);
-                    printf("%s %c\n", "É identificador char atual: ", currentChar);
-                    currentChar = advance(&str);
+                    currentState = STATE_ID_2;
+                } else {
+                    // check keyword
+                    return 1;    
                 }
-                // check keyword
-                return 1;
             break;
 
             // Constant
             case STATE_CT_2:
-                while (isDigit(currentChar)) {
+                if (isDigit(currentChar)) {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
-                }
-                if (currentChar == '.') {
-                    currentChar = advance(&str);
+                    currentState = STATE_CT_2;
+                } else if (currentChar == '.') {
                     currentState = STATE_CT_3;
                 } else {
                     return 1;
@@ -268,7 +265,6 @@ int lex(Token *token, InputStr str) {
             case STATE_CT_3:
                 if (isDigit(currentChar)) {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_CT_4;
                 } else {
                     // if no digit was found after the '.', remove it from the token and return it, since it is a valid number
@@ -278,20 +274,19 @@ int lex(Token *token, InputStr str) {
             break;
 
             case STATE_CT_4:
-                while (isDigit(currentChar)) {
+                if (isDigit(currentChar)) {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
+                    currentState = STATE_CT_4;
+                } else {
+                    return 1;
                 }
-                return 1;
             break;
 
             case STATE_CT_5:
                 if (currentChar != '\'' && currentChar != '\\' && isAscii(currentChar)) {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_CT_6;
                 } else if (currentChar == '\\') {
-                    currentChar = advance(&str);
                     currentState = STATE_CT_8;
                 } else {
                     return 0;
@@ -301,7 +296,6 @@ int lex(Token *token, InputStr str) {
             case STATE_CT_6:
                 if (currentChar == '\'') {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_CT_7;
                 } else {
                     return 0;
@@ -315,7 +309,6 @@ int lex(Token *token, InputStr str) {
             case STATE_CT_8:
                 if (currentChar == '\\' || currentChar == '"' || currentChar == '\'' || currentChar == 'n' || currentChar == 't' || currentChar == 'r') {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_CT_6;
                 } else {
                     return 0;
@@ -324,17 +317,14 @@ int lex(Token *token, InputStr str) {
 
             // String
             case STATE_ST_2:
-                while (currentChar != '"' && currentChar != '\\' && isAscii(currentChar)) {
+                if (currentChar != '"' && currentChar != '\\' && isAscii(currentChar)) {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
-                }
-                if (currentChar == '"') {
+                    currentState = STATE_ST_2;
+                } else if (currentChar == '"') {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_ST_3;
                 } else if (currentChar == '\\') {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_ST_4;
                 } else {
                     return 0;
@@ -348,7 +338,6 @@ int lex(Token *token, InputStr str) {
             case STATE_ST_4:
                 if (currentChar == '\\' || currentChar == '"' || currentChar == '\'' || currentChar == 'n' || currentChar == 't' || currentChar == 'r') {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_ST_2;
                 } else {
                     return 0;
@@ -363,7 +352,6 @@ int lex(Token *token, InputStr str) {
             case STATE_OP_3:
                 if (currentChar == '=') {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_OP_2;
                 } else {
                     return 1;
@@ -373,7 +361,6 @@ int lex(Token *token, InputStr str) {
             case STATE_OP_4:
                 if (currentChar == '*') {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_OP_2;
                 } else {
                     return 1;
@@ -383,7 +370,6 @@ int lex(Token *token, InputStr str) {
             case STATE_OP_5:
                 if (currentChar == '|') {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_OP_2;
                 } else {
                     return 0;
@@ -393,7 +379,6 @@ int lex(Token *token, InputStr str) {
             case STATE_OP_6:
                 if (currentChar == '&') {
                     incrementToken(token, currentChar);
-                    currentChar = advance(&str);
                     currentState = STATE_OP_2;
                 } else {
                     return 0;
@@ -408,6 +393,6 @@ int lex(Token *token, InputStr str) {
             default:
                 return 0;
         }
-
+        currentChar = advance(str);
     }
 }
