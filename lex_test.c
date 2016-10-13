@@ -28,7 +28,7 @@
 #define STATE_OP_6 406
 #define STATE_PT_2 502
 
-const char KEYWORDS[18][30] = { 
+const char KEYWORDS[18][30] = {
     {'t', 'y', 'p', 'e', 's'},
     {'i', 'n', 't'},
     {'f', 'l', 'o', 'a', 't'},
@@ -46,7 +46,8 @@ const char KEYWORDS[18][30] = {
     {'e', 'l', 's', 'e'},
     {'w', 'h', 'i', 'l', 'e'},
     {'p', 'r', 'i', 'n', 't'},
-    {'r', 'e', 'a', 'd'}
+    {'r', 'e', 'a', 'd'},
+    {'r', 'e', 't', 'u', 'r', 'n'}
 };
 
 typedef struct _token {
@@ -95,7 +96,7 @@ int main() {
         if (success) {
             tokensFound++;
             printf("%s <size = %d, type = %d>\n", t.value, t.size, t.type);
-        } else { 
+        } else {
             if(str.value[str.pos] == '\0'){
                 printf("%s\n", "Finished extracting tokens");
             } else {
@@ -267,7 +268,7 @@ int lex(Token *token, InputStr *str) {
                 if (currentChar != '\r' && currentChar != '\n') {
                     currentState = STATE_CS_2;
                 } else {
-                    currentState = STATE_S;   
+                    currentState = STATE_S;
                 }
             break;
 
@@ -280,7 +281,7 @@ int lex(Token *token, InputStr *str) {
                     if (isKeyword((*token).value)) {
                         (*token).type = TYPE_KEYWORD;
                     }
-                    searchStatus = 1;    
+                    searchStatus = 1;
                 }
             break;
 
@@ -303,7 +304,7 @@ int lex(Token *token, InputStr *str) {
                     currentState = STATE_CT_4;
                 } else {
                     // if no digit was found after the '.', remove it from the token and return it, since it is a valid number
-                    (*str).pos--; 
+                    (*str).pos--;
                     (*token).size--;
                     (*token).value[(*token).size] = '\0';
                     searchStatus = 1;
