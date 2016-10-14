@@ -191,6 +191,7 @@ int lex(Token *token, InputStr *str) {
                     case '-':
                     case '/':
                     case '%':
+                    case '*':
                         (*token).type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
                         currentState = STATE_OP_2;
@@ -203,12 +204,6 @@ int lex(Token *token, InputStr *str) {
                         (*token).type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
                         currentState = STATE_OP_3;
-                    break;
-
-                    case '*':
-                        (*token).type = TYPE_OPERATOR;
-                        incrementToken(token, currentChar);
-                        currentState = STATE_OP_4;
                     break;
 
                     case '|':
@@ -390,15 +385,6 @@ int lex(Token *token, InputStr *str) {
 
             case STATE_OP_3:
                 if (currentChar == '=') {
-                    incrementToken(token, currentChar);
-                    currentState = STATE_OP_2;
-                } else {
-                    searchStatus = 1;
-                }
-            break;
-
-            case STATE_OP_4:
-                if (currentChar == '*') {
                     incrementToken(token, currentChar);
                     currentState = STATE_OP_2;
                 } else {
