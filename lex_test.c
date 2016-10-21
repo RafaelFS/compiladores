@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+// TOKEN TYPES
 #define TYPE_IDENTIFIER 0
 #define TYPE_CONSTANT   1
 #define TYPE_STRING     2
@@ -8,6 +9,7 @@
 #define TYPE_PUNCTUATOR 4
 #define TYPE_KEYWORD    5
 
+// STATES
 #define STATE_S      0
 #define STATE_CS_2   2
 #define STATE_ID_2 102
@@ -28,7 +30,15 @@
 #define STATE_OP_6 406
 #define STATE_PT_2 502
 
-const char KEYWORDS[18][30] = {
+// SIZE_CONSTANTS
+#define MAX_KEYWORD_SIZE 64
+#define KEYWORD_ARR_SIZE 19
+#define MAX_TOKEN_SIZE 64
+#define TOKEN_ARR_SIZE 256
+#define MAX_INPUT_SIZE 1024
+
+
+const char KEYWORDS[KEYWORD_ARR_SIZE][MAX_KEYWORD_SIZE] = {
     {'t', 'y', 'p', 'e', 's'},
     {'i', 'n', 't'},
     {'f', 'l', 'o', 'a', 't'},
@@ -53,18 +63,18 @@ const char KEYWORDS[18][30] = {
 typedef struct _token {
     int type;
     int size;
-    char value[100];
+    char value[MAX_TOKEN_SIZE];
 } Token;
 
 typedef struct _inputStr {
-    char value[200];
+    char value[MAX_INPUT_SIZE];
     int pos;
 } InputStr;
 
 int isLetter(char c);
 int isDigit(char c);
 int isPrintableAscii(char c);
-int isKeyword(char string[30]);
+int isKeyword(char string[MAX_KEYWORD_SIZE]);
 
 char advance(InputStr *str);
 
@@ -83,9 +93,9 @@ int main() {
     str.pos = 0;
 
     printf("Please type a segment of code: ");
-    fgets(str.value, 256, stdin);
+    fgets(str.value, MAX_INPUT_SIZE, stdin);
 
-    Token tokens[256];
+    Token tokens[TOKEN_ARR_SIZE];
     int tokensFound = 0;
 
     while(1) {
@@ -137,10 +147,10 @@ int isPrintableAscii(char c) {
     }
 }
 
-int isKeyword(char string[30]) {
+int isKeyword(char string[MAX_KEYWORD_SIZE]) {
     int i;
 
-    for (i = 0; i < 18; i++) {
+    for (i = 0; i < KEYWORD_ARR_SIZE; i++) {
         if (strcmp(string, KEYWORDS[i]) == 0) {
             return 1;
         }
