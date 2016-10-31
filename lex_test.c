@@ -71,6 +71,8 @@ typedef struct _inputStr {
     int pos;
 } InputStr;
 
+void printTokenType(int type);
+
 int isLetter(char c);
 int isDigit(char c);
 int isPrintableAscii(char c);
@@ -80,7 +82,7 @@ char advance(InputStr *str);
 
 void incrementToken(Token *token, char currentChar);
 
-int lex(Token *token, InputStr *str);
+int getNextToken(Token *token, InputStr *str);
 
 //////////
 // MAIN //
@@ -88,12 +90,23 @@ int lex(Token *token, InputStr *str);
 
 int main() {
 
+    FILE *programFile;
+
     InputStr str;
 
     str.pos = 0;
 
-    printf("Please type a segment of code: ");
-    fgets(str.value, MAX_INPUT_SIZE, stdin);
+    programFile = fopen("sample_program.cmm", "r");
+
+    char c;
+
+    do {
+        c = fgetc(programFile);
+        str.value[str.pos] = c;
+        str.pos++;
+    } while (c != EOF);
+
+    str.pos = 0;
 
     Token tokens[TOKEN_ARR_SIZE];
     int tokensFound = 0;
@@ -101,16 +114,17 @@ int main() {
     while(1) {
         Token t = tokens[tokensFound];
 
-        int success = lex(&t, &str);
+        int success = getNextToken(&t, &str);
 
         if (success) {
             tokensFound++;
-            printf("%s <size = %d, type = %d>\n", t.value, t.size, t.type);
+            printTokenType(t.type);
+            printf("\t %s \n", t.value);
         } else {
             if(str.value[str.pos] == '\0'){
-                printf("%s\n", "Finished extracting tokens");
+                printf("Finished extracting %d tokens.\n", tokensFound);
             } else {
-                printf("Invalid character'%c' at position %d \n", str.value[str.pos], str.pos);
+                printf("Invalid character'%c' at position %d.\n", str.value[str.pos], str.pos);
             }
             break;
         }
@@ -122,6 +136,29 @@ int main() {
 ///////////////
 // FUNCTIONS //
 ///////////////
+
+void printTokenType(int type) {
+    switch (type) {
+        case TYPE_IDENTIFIER:
+            printf("<Identifier>");
+            break;
+        case TYPE_CONSTANT:
+            printf("<Constant>  ");
+            break;
+        case TYPE_STRING:
+            printf("<String>    ");
+            break;
+        case TYPE_OPERATOR:
+            printf("<Operator>  ");
+            break;
+        case TYPE_PUNCTUATOR:
+            printf("<Punctuator>");
+            break;
+        case TYPE_KEYWORD:
+            printf("<Keyword>   ");
+            break;
+    }
+}
 
 int isLetter(char c) {
     if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
@@ -169,7 +206,7 @@ void incrementToken(Token *token, char currentChar) {
     (*token).size++;
 }
 
-int lex(Token *token, InputStr *str) {
+int getNextToken(Token *token, InputStr *str) {
     int currentState = STATE_S;
 
     char currentChar;
@@ -248,6 +285,7 @@ int lex(Token *token, InputStr *str) {
                     case ']':
                     case ';':
                     case ',':
+                    case '.':
                         (*token).type = TYPE_PUNCTUATOR;
                         incrementToken(token, currentChar);
                         currentState = STATE_PT_2;

@@ -7,4 +7,6 @@
 *
 */
 
+#define TOKEN_ARR_SIZE 4096
+
 void compile(FILE *pointerToSourceFile);
