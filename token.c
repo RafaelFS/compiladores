@@ -7,4 +7,28 @@
 *
 */
 
+#include <stdio.h>
 #include "token.h"
+
+void printTokenType(int type) {
+    switch (type) {
+        case TYPE_IDENTIFIER:
+            printf("<Identifier>");
+            break;
+        case TYPE_CONSTANT:
+            printf("<Constant>  ");
+            break;
+        case TYPE_STRING:
+            printf("<String>    ");
+            break;
+        case TYPE_OPERATOR:
+            printf("<Operator>  ");
+            break;
+        case TYPE_PUNCTUATOR:
+            printf("<Punctuator>");
+            break;
+        case TYPE_KEYWORD:
+            printf("<Keyword>   ");
+            break;
+    }
+}

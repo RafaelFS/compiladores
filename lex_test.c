@@ -1,15 +1,164 @@
-/*
-* lexico.c
-*
-* PCS2056 - Linguagens e Compiladores
-* Pedro Napolitano Sant’Ana 	8041817
-* Rafael Freitas da Silva 	6480585
-*
-*/
-
 #include <stdio.h>
 #include <string.h>
-#include "lexico.h"
+
+// TOKEN TYPES
+#define TYPE_IDENTIFIER 0
+#define TYPE_CONSTANT   1
+#define TYPE_STRING     2
+#define TYPE_OPERATOR   3
+#define TYPE_PUNCTUATOR 4
+#define TYPE_KEYWORD    5
+
+// STATES
+#define STATE_S      0
+#define STATE_CS_2   2
+#define STATE_ID_2 102
+#define STATE_CT_2 202
+#define STATE_CT_3 203
+#define STATE_CT_4 204
+#define STATE_CT_5 205
+#define STATE_CT_6 206
+#define STATE_CT_7 207
+#define STATE_CT_8 208
+#define STATE_ST_2 302
+#define STATE_ST_3 303
+#define STATE_ST_4 304
+#define STATE_OP_2 402
+#define STATE_OP_3 403
+#define STATE_OP_4 404
+#define STATE_OP_5 405
+#define STATE_OP_6 406
+#define STATE_PT_2 502
+
+// SIZE_CONSTANTS
+#define MAX_KEYWORD_SIZE 64
+#define KEYWORD_ARR_SIZE 19
+#define MAX_TOKEN_SIZE 64
+#define TOKEN_ARR_SIZE 256
+#define MAX_INPUT_SIZE 1024
+
+
+const char KEYWORDS[KEYWORD_ARR_SIZE][MAX_KEYWORD_SIZE] = {
+    {'t', 'y', 'p', 'e', 's'},
+    {'i', 'n', 't'},
+    {'f', 'l', 'o', 'a', 't'},
+    {'b', 'o', 'o', 'l'},
+    {'c', 'h', 'a', 'r'},
+    {'s', 't', 'r', 'u', 'c', 't'},
+    {'g', 'l', 'o', 'b', 'a', 'l'},
+    {'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', 's'},
+    {'i', 'm', 'p', 'l', 'e', 'm', 'e', 'n', 't', 'a', 't', 'i', 'o', 'n'},
+    {'m', 'a', 'i', 'n'},
+    {'t', 'r', 'u', 'e'},
+    {'f', 'a', 'l', 's', 'e'},
+    {'i', 'f'},
+    {'e', 'l', 's', 'i', 'f'},
+    {'e', 'l', 's', 'e'},
+    {'w', 'h', 'i', 'l', 'e'},
+    {'p', 'r', 'i', 'n', 't'},
+    {'r', 'e', 'a', 'd'},
+    {'r', 'e', 't', 'u', 'r', 'n'}
+};
+
+typedef struct _token {
+    int type;
+    int size;
+    char value[MAX_TOKEN_SIZE];
+} Token;
+
+typedef struct _inputStr {
+    char value[MAX_INPUT_SIZE];
+    int pos;
+} InputStr;
+
+void printTokenType(int type);
+
+int isLetter(char c);
+int isDigit(char c);
+int isPrintableAscii(char c);
+int isKeyword(char string[MAX_KEYWORD_SIZE]);
+
+char advance(InputStr *str);
+
+void incrementToken(Token *token, char currentChar);
+
+int getNextToken(Token *token, InputStr *str);
+
+//////////
+// MAIN //
+//////////
+
+int main() {
+
+    FILE *programFile;
+
+    InputStr str;
+
+    str.pos = 0;
+
+    programFile = fopen("sample_program.cmm", "r");
+
+    char c;
+
+    do {
+        c = fgetc(programFile);
+        str.value[str.pos] = c;
+        str.pos++;
+    } while (c != EOF);
+
+    str.pos = 0;
+
+    Token tokens[TOKEN_ARR_SIZE];
+    int tokensFound = 0;
+
+    while(1) {
+        Token t = tokens[tokensFound];
+
+        int success = getNextToken(&t, &str);
+
+        if (success) {
+            tokensFound++;
+            printTokenType(t.type);
+            printf("\t %s \n", t.value);
+        } else {
+            if(str.value[str.pos] == '\0'){
+                printf("Finished extracting %d tokens.\n", tokensFound);
+            } else {
+                printf("Invalid character'%c' at position %d.\n", str.value[str.pos], str.pos);
+            }
+            break;
+        }
+    }
+
+    return 0;
+}
+
+///////////////
+// FUNCTIONS //
+///////////////
+
+void printTokenType(int type) {
+    switch (type) {
+        case TYPE_IDENTIFIER:
+            printf("<Identifier>");
+            break;
+        case TYPE_CONSTANT:
+            printf("<Constant>  ");
+            break;
+        case TYPE_STRING:
+            printf("<String>    ");
+            break;
+        case TYPE_OPERATOR:
+            printf("<Operator>  ");
+            break;
+        case TYPE_PUNCTUATOR:
+            printf("<Punctuator>");
+            break;
+        case TYPE_KEYWORD:
+            printf("<Keyword>   ");
+            break;
+    }
+}
 
 int isLetter(char c) {
     if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
@@ -36,31 +185,6 @@ int isPrintableAscii(char c) {
 }
 
 int isKeyword(char string[MAX_KEYWORD_SIZE]) {
-
-
-    const char KEYWORDS[KEYWORD_ARR_SIZE][MAX_KEYWORD_SIZE] = {
-        {'t', 'y', 'p', 'e', 's'},
-        {'i', 'n', 't'},
-        {'f', 'l', 'o', 'a', 't'},
-        {'b', 'o', 'o', 'l'},
-        {'c', 'h', 'a', 'r'},
-        {'s', 't', 'r', 'u', 'c', 't'},
-        {'g', 'l', 'o', 'b', 'a', 'l'},
-        {'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', 's'},
-        {'i', 'm', 'p', 'l', 'e', 'm', 'e', 'n', 't', 'a', 't', 'i', 'o', 'n'},
-        {'m', 'a', 'i', 'n'},
-        {'t', 'r', 'u', 'e'},
-        {'f', 'a', 'l', 's', 'e'},
-        {'i', 'f'},
-        {'e', 'l', 's', 'i', 'f'},
-        {'e', 'l', 's', 'e'},
-        {'w', 'h', 'i', 'l', 'e'},
-        {'p', 'r', 'i', 'n', 't'},
-        {'r', 'e', 'a', 'd'},
-        {'r', 'e', 't', 'u', 'r', 'n'}
-    };
-
-
     int i;
 
     for (i = 0; i < KEYWORD_ARR_SIZE; i++) {

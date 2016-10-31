@@ -1,0 +1,50 @@
+types {
+  struct {
+    int x;
+    int y;
+  } pos;
+}
+
+
+functions {
+  int getPosition(int initialPosition, int velocity, int time);
+} implementation {
+  # St = S0 + v * t
+  int getPosition(int initialPosition, int velocity, int time) {
+    return initialPosition + velocity * time;
+  }
+}
+
+
+main {
+  int positionsX[256];
+  pos currentPosition;
+  int time = 0;
+  int velocityX;
+  int velocityY = 1;
+
+  currentPosition.x = 0;
+  currentPosition.y = 0;
+
+
+  print("Please type a velocity for the X axys: ");
+  read(velocityX);
+
+  # Calculate the position during 60 seconds
+  while (time <= 60) {
+    currentPosition.x = getPosition(currentPosition.x, velocityX, time);
+    currentPosition.y = getPosition(currentPosition.y, velocityY, time);
+
+    positionsX[time] = currentPosition.x;
+
+    # Print the updated time and position every 5 seconds
+    if (time % 5 == 0) {
+      print("\nTime: ");
+      print(time);
+      print("\nPosition: ");
+      print(currentPosition.x);
+    }
+
+    time = time + 1;
+  }
+}

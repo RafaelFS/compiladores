@@ -37,7 +37,7 @@ FILE* openAndGetPointerToSourceFile(char filename[]) {
 	char *mode = "r";
 	FILE *pointerToSourceFile = fopen(filename, mode);
 	if (pointerToSourceFile == NULL) {
-		printf("%s\n", "Erro ao ler arquivo fonte" );
+		printf("Error while reading source file.");
 	}
 	return pointerToSourceFile;
 }
