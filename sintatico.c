@@ -299,7 +299,57 @@ int autFunctions(TokenArr *tokenArr) {
 }
 
 int autMain(TokenArr *tokenArr) {
-    return 0;
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if (t.type == TYPE_KEYWORD && strcmp(t.value, "main") == 0) {
+                    state = 1;
+                    tokenArr->pos++;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "{") == 0) {
+                    state = 2;
+                    tokenArr->pos++;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 2:
+                if (autCmd(tokenArr)) {
+                    state = 2;
+                } else if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "}") == 0) {
+                    state = 3;
+                    tokenArr->pos++;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 3:
+                todo("Main");
+                syntaxMatch = 1;
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
 }
 
 int autGlobal(TokenArr *tokenArr) {
