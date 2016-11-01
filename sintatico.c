@@ -945,3 +945,68 @@ int autIntNum(TokenArr *tokenArr) {
 
     return syntaxMatch;
 }
+
+int autAriExpr(TokenArr *tokenArr) {
+    printf("%s\n", "AriExpr" );
+    return 0;
+}
+
+int autAriTermA(TokenArr *tokenArr) {
+    printf("%s\n", "AriTermA");
+    return 0;
+}
+
+int autAriTermB(TokenArr *tokenArr) {
+    printf("%s\n", "AriTermB");
+    return 0;
+}
+
+int autAriFactor(TokenArr *tokenArr) {
+    printf("%s\n", "AriFactor");
+    return 0;
+}
+
+int autBoolExpr(TokenArr *tokenArr) {
+    printf("%s\n", "BoolExpr");
+    return 0;
+}
+
+int autBoolTermA(TokenArr *tokenArr) {
+    printf("%s\n", "BoolTermA");
+    return 0;
+}
+
+int autBoolTermB(TokenArr *tokenArr) {
+    printf("%s\n", "BoolTermB");
+    return 0;
+}
+
+int autBoolTermC(TokenArr *tokenArr) {
+    printf("%s\n", "BoolTermC");
+    return 0;
+}
+
+int autBoolFactor(TokenArr *tokenArr) {
+    printf("%s\n", "BoolFactor");
+    return 0;
+}
+
+int autAriComp(TokenArr *tokenArr) {
+    printf("%s\n", "AriComp");
+    return 0;
+}
+
+int autBoolComp(TokenArr *tokenArr) {
+    printf("%s\n", "BoolComp");
+    return 0;
+}
+
+int autFuncCall(TokenArr *tokenArr) {
+    printf("%s\n", "FuncCall");
+    return 0;
+}
+
+int autParamList(TokenArr *tokenArr) {
+    printf("%s\n", "ParamList");
+    return 0;
+}
