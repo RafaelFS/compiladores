@@ -43,3 +43,4 @@ int autIfCmd(TokenArr *tokenArr);
 int autItrCmd(TokenArr *tokenArr);
 int autInCmd(TokenArr *tokenArr);
 int autOutCmd(TokenArr *tokenArr);
+int autIntNum(TokenArr *tokenArr);

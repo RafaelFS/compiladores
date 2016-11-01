@@ -70,6 +70,15 @@ void todo(char str[100]) {
     printf("Matched automata [%s]\n", str);
 }
 
+int isInteger(char constant[MAX_TOKEN_SIZE]){
+    char *point = strstr(constant, ".");
+    if (point) {
+      return 0;
+    } else {
+      return 1;
+    }
+}
+
 int autProgram(TokenArr *tokenArr) {
     int state = 0;
     int syntaxMatch = -1;
@@ -542,7 +551,85 @@ int autStruct(TokenArr *tokenArr) {
 }
 
 int autDecl(TokenArr *tokenArr) {
-    return 0;
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if (autCustomType(tokenArr)) {
+                    state = 1;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                if (autAttr(tokenArr)) {
+                    state = 3;
+                }
+                else if (autName(tokenArr)) {
+                    state = 2;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 2:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, ";") == 0) {
+                    tokenArr->pos++;
+                    state = 3;
+                } else if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "[") == 0) {
+                    tokenArr->pos++;
+                    state = 4;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 3:
+              todo("Decl");
+              syntaxMatch = 1;
+            break;
+
+            case 4:
+                if (autIntNum(tokenArr)) {
+                    state = 5;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 5:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "]") == 0) {
+                    tokenArr->pos++;
+                    state = 6;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 6:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, ";") == 0) {
+                    tokenArr->pos++;
+                    state = 3;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
 }
 
 int autFuncDecl(TokenArr *tokenArr) {
@@ -823,4 +910,38 @@ int autInCmd(TokenArr *tokenArr) {
 int autOutCmd(TokenArr *tokenArr) {
     printf("%s\n", "OutCmd" );
     return 0;
+}
+
+int autIntNum(TokenArr *tokenArr) {
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if (t.type == TYPE_CONSTANT && isInteger(t.value)) {
+                    tokenArr->pos++;
+                    state = 1;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                todo("IntNum");
+                syntaxMatch = 1;
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
 }
