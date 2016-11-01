@@ -858,23 +858,16 @@ int autFuncImpl(TokenArr *tokenArr) {
 
             case 5:
                 if (autFuncCmdList(tokenArr)) {
-                    tokenArr->pos++;
                     state = 5;
+                } else if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "}") == 0) {
+                    tokenArr->pos++;
+                    state = 6;
                 } else {
                     syntaxMatch = 0;
                 }
             break;
 
             case 6:
-                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "}") == 0) {
-                    tokenArr->pos++;
-                    state = 5;
-                } else {
-                    syntaxMatch = 0;
-                }
-            break;
-
-            case 7:
                 todo("FuncImpl");
                 syntaxMatch = 1;
             break;
