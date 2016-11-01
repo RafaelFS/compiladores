@@ -343,6 +343,10 @@ int autMain(TokenArr *tokenArr) {
             default:
                 syntaxMatch = 0;
         }
+
+        if (tokenArr->pos == tokenArr->size) {
+            syntaxMatch = 0;
+        }
     }
 
     if (syntaxMatch == 0) {
@@ -1018,6 +1022,10 @@ int autExpression(TokenArr *tokenArr) {
             default:
                 syntaxMatch = 0;
         }
+
+        if (tokenArr->pos == tokenArr->size) {
+            syntaxMatch = 0;
+        }
     }
 
     if (syntaxMatch == 0) {
@@ -1076,6 +1084,10 @@ int autExpression(TokenArr *tokenArr) {
 
             default:
                 syntaxMatch = 0;
+        }
+
+        if (tokenArr->pos == tokenArr->size) {
+            syntaxMatch = 0;
         }
     }
 
@@ -2112,11 +2124,6 @@ int autParamList(TokenArr *tokenArr) {
 }
 
 int autVar(TokenArr *tokenArr) {
-    printf("%s\n", "autVar");
-    return 0;
-}
-
-int autVar(TokenArr *tokenArr) {
     int state = 0;
     int syntaxMatch = -1;
     int startingToken = tokenArr->pos;
@@ -2178,6 +2185,10 @@ int autVar(TokenArr *tokenArr) {
 
             default:
                 syntaxMatch = 0;
+        }
+
+        if (tokenArr->pos == tokenArr->size) {
+            syntaxMatch = 0;
         }
     }
 
