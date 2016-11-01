@@ -32,3 +32,7 @@ int autName(TokenArr *tokenArr);
 int autCustomType(TokenArr *tokenArr);
 int autType(TokenArr *tokenArr);
 int autStruct(TokenArr *tokenArr);
+int autDecl(TokenArr *tokenArr);
+int autFuncDecl(TokenArr *tokenArr);
+int autFuncImpl(TokenArr *tokenArr);
+int autFuncCmdList(TokenArr *tokenArr);

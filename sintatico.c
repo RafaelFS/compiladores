@@ -200,7 +200,80 @@ int autTypes(TokenArr *tokenArr) {
 }
 
 int autFunctions(TokenArr *tokenArr) {
-    return 0;
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if (t.type == TYPE_KEYWORD && strcmp(t.value, "functions") == 0) {
+                    tokenArr->pos++;
+                    state = 1;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "{") == 0) {
+                    tokenArr->pos++;
+                    state = 2;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 2:
+                if (autFuncDecl(tokenArr)) {
+                    state = 2;
+                } else if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "}") == 0) {
+                    tokenArr->pos++;
+                    state = 3;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 3:
+                if (t.type == TYPE_KEYWORD && strcmp(t.value, "implementation") == 0) {
+                    tokenArr->pos++;
+                    state = 4;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 4:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "{") == 0) {
+                    tokenArr->pos++;
+                    state = 5;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 5:
+                if (autFuncImpl(tokenArr)) {
+                    state = 5;
+                } else if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "}") == 0) {
+                    tokenArr->pos++;
+                    state = 6;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
 }
 
 int autMain(TokenArr *tokenArr) {
@@ -208,7 +281,57 @@ int autMain(TokenArr *tokenArr) {
 }
 
 int autGlobal(TokenArr *tokenArr) {
-    return 0;
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if (t.type == TYPE_KEYWORD && strcmp(t.value, "global") == 0) {
+                    state = 1;
+                    tokenArr->pos++;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "{") == 0) {
+                    state = 2;
+                    tokenArr->pos++;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 2:
+                if (autDecl(tokenArr)) {
+                    state = 2;
+                } else if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "}") == 0) {
+                    state = 3;
+                    tokenArr->pos++;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 3:
+                todo("Global");
+                syntaxMatch = 1;
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
 }
 
 int autTypeDef(TokenArr *tokenArr) {
@@ -229,7 +352,7 @@ int autTypeDef(TokenArr *tokenArr) {
 
             case 1:
                 if (autName(tokenArr)) {
-                    state = 1;
+                    state = 2;
                 } else {
                     syntaxMatch = 0;
                 }
@@ -262,7 +385,37 @@ int autTypeDef(TokenArr *tokenArr) {
 }
 
 int autName(TokenArr *tokenArr) {
-    return 0;
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if (t.type == TYPE_IDENTIFIER) {
+                    tokenArr->pos++;
+                    state = 1;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                todo("Name");
+                syntaxMatch = 1;
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
 }
 
 int autCustomType(TokenArr *tokenArr) {
@@ -386,4 +539,173 @@ int autStruct(TokenArr *tokenArr) {
     }
 
     return syntaxMatch;
+}
+
+int autDecl(TokenArr *tokenArr) {
+    return 0;
+}
+
+int autFuncDecl(TokenArr *tokenArr) {
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if (autCustomType(tokenArr)) {
+                    state = 1;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                if (autName(tokenArr)) {
+                    state = 2;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 2:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "(") == 0) {
+                    tokenArr->pos++;
+                    state = 3;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+
+            case 3:
+                if (autTypeDef(tokenArr)) {
+                    state = 3;
+                } else if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, ")") == 0) {
+                    tokenArr->pos++;
+                    state = 4;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 4:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, ";") == 0) {
+                    tokenArr->pos++;
+                    state = 5;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 5:
+                todo("FuncDecl");
+                syntaxMatch = 1;
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+  }
+
+  if (syntaxMatch == 0) {
+      tokenArr->pos = startingToken;
+  }
+
+  return syntaxMatch;
+}
+
+int autFuncImpl(TokenArr *tokenArr) {
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if (autCustomType(tokenArr)) {
+                    state = 1;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                if (autName(tokenArr)) {
+                    state = 2;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 2:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "(") == 0) {
+                    tokenArr->pos++;
+                    state = 3;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+
+            case 3:
+                if (autTypeDef(tokenArr)) {
+                    state = 3;
+                } else if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, ")") == 0) {
+                    tokenArr->pos++;
+                    state = 4;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 4:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "{") == 0) {
+                    tokenArr->pos++;
+                    state = 5;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 5:
+                if (autFuncCmdList(tokenArr)) {
+                    tokenArr->pos++;
+                    state = 5;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 6:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "}") == 0) {
+                    tokenArr->pos++;
+                    state = 5;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 7:
+                todo("FuncImpl");
+                syntaxMatch = 1;
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
+}
+
+int autFuncCmdList(TokenArr *tokenArr) {
+    printf("%s\n", "Func Cmd List" );
+    return 0;
 }
