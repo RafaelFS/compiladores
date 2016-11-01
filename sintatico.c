@@ -853,6 +853,9 @@ int autFuncCmdList(TokenArr *tokenArr) {
                 if (autCmd(tokenArr)) {
                     state = 1;
                 } else if (t.type == TYPE_KEYWORD && strcmp(t.value, "return") == 0) {
+                    state = 2;
+                    tokenArr->pos++;
+                } else {
                     syntaxMatch = 0;
                 }
             break;
