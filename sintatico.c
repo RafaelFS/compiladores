@@ -282,6 +282,11 @@ int autFunctions(TokenArr *tokenArr) {
                 }
             break;
 
+            case 6:
+                todo("Functions");
+                syntaxMatch = 1;
+            break;
+
             default:
                 syntaxMatch = 0;
         }
