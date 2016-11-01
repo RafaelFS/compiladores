@@ -2034,6 +2034,73 @@ int autVar(TokenArr *tokenArr) {
 }
 
 int autVar(TokenArr *tokenArr) {
-    printf("%s\n", "Var");
-    return 0;
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            printf("%s\n", t.value );
+            case 0:
+                if(autName(tokenArr)){
+                    state = 1;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "[") == 0) {
+                    tokenArr->pos++;
+                    state = 2;
+                } else if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, ".") == 0) {
+                    tokenArr->pos++;
+                    state = 3;
+                } else {
+                    todo("Var");
+                    syntaxMatch = 1;
+                }
+            break;
+
+            case 2:
+                if (autAriExpr(tokenArr)) {
+                    state = 4;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 3:
+                if (autName(tokenArr)) {
+                    state = 5;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 4:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "]") == 0) {
+                    tokenArr->pos++;
+                    state = 5;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 5:
+                todo("Var");
+                syntaxMatch = 1;
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
 }
