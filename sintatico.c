@@ -665,8 +665,7 @@ int autDecl(TokenArr *tokenArr) {
             case 1:
                 if (autAttr(tokenArr)) {
                     state = 3;
-                }
-                else if (autName(tokenArr)) {
+                } else if (autName(tokenArr)) {
                     state = 2;
                 } else {
                     syntaxMatch = 0;
@@ -1050,7 +1049,7 @@ int autExpression(TokenArr *tokenArr) {
             break;
 
             case 1:
-                if(t.type == TYPE_PUNCTUATOR && strcmp(t.value, "=") == 0){
+                if(t.type == TYPE_OPERATOR && strcmp(t.value, "=") == 0){
                     state = 2;
                     tokenArr->pos++;
                 } else {
@@ -2129,7 +2128,6 @@ int autVar(TokenArr *tokenArr) {
     while (syntaxMatch == -1) {
         t = tokenArr->tokens[tokenArr->pos];
         switch (state) {
-            printf("%s\n", t.value );
             case 0:
                 if(autName(tokenArr)){
                     state = 1;
