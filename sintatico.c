@@ -943,11 +943,41 @@ int autCmd(TokenArr *tokenArr) {
 }
 
 int autExpression(TokenArr *tokenArr) {
-    printf("%s\n", "Expression" );
-    return 0;
-}
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if(autAriExpr(tokenArr)){
+                    state = 1;
+                } else if(autBoolExpr(tokenArr)){
+                    state = 1;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
 
-int autAttr(TokenArr *tokenArr) {
+            case 1:
+                todo("Expression");
+                syntaxMatch = 1;
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
+  }
+
+  int autAttr(TokenArr *tokenArr) {
     int state = 0;
     int syntaxMatch = -1;
     int startingToken = tokenArr->pos;
