@@ -57,3 +57,4 @@ int autAriComp(TokenArr *tokenArr);
 int autBoolComp(TokenArr *tokenArr);
 int autFuncCall(TokenArr *tokenArr);
 int autParamList(TokenArr *tokenArr);
+int autVar(TokenArr *tokenArr);
