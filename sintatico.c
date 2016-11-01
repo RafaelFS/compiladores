@@ -706,6 +706,121 @@ int autFuncImpl(TokenArr *tokenArr) {
 }
 
 int autFuncCmdList(TokenArr *tokenArr) {
-    printf("%s\n", "Func Cmd List" );
+    int state = 0;
+    int syntaxMatch = -1;
+    int startingToken = tokenArr->pos;
+    Token t;
+    while (syntaxMatch == -1) {
+        t = tokenArr->tokens[tokenArr->pos];
+        switch (state) {
+            case 0:
+                if (autCmd(tokenArr)) {
+                    state = 1;
+                } else if (t.type == TYPE_KEYWORD && strcmp(t.value, "return") == 0) {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 1:
+                if (autCmd(tokenArr)) {
+                    state = 1;
+                } else if(t.type == TYPE_KEYWORD && strcmp(t.value, "return") == 0) {
+                    state = 2;
+                    tokenArr->pos++;
+                } else {
+                  todo("FuncCmdList");
+                  syntaxMatch = 1;
+                }
+            break;
+
+            case 2:
+                if (autExpression(tokenArr)) {
+                    state = 3;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            case 3:
+                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, ";") == 0) {
+                    state = 1;
+                    tokenArr->pos++;
+                } else {
+                    syntaxMatch = 0;
+                }
+            break;
+
+            default:
+                syntaxMatch = 0;
+        }
+    }
+
+    if (syntaxMatch == 0) {
+        tokenArr->pos = startingToken;
+    }
+
+    return syntaxMatch;
+}
+
+int autCmd(TokenArr *tokenArr) {
+  int state = 0;
+  int syntaxMatch = -1;
+  int startingToken = tokenArr->pos;
+  Token t;
+  while (syntaxMatch == -1) {
+      t = tokenArr->tokens[tokenArr->pos];
+      switch (state) {
+          case 0:
+              if (autDecl(tokenArr) || autAttr(tokenArr) || autIfCmd(tokenArr) || autItrCmd(tokenArr) || autInCmd(tokenArr) || autOutCmd(tokenArr)) {
+                  state = 1;
+              } else {
+                  syntaxMatch = 0;
+              }
+          break;
+
+          case 1:
+              todo("Cmd");
+              syntaxMatch = 1;
+          break;
+
+          default:
+              syntaxMatch = 0;
+      }
+  }
+
+  if (syntaxMatch == 0) {
+      tokenArr->pos = startingToken;
+  }
+
+  return syntaxMatch;
+}
+
+int autExpression(TokenArr *tokenArr) {
+    printf("%s\n", "Expression" );
+    return 0;
+}
+
+int autAttr(TokenArr *tokenArr) {
+    printf("%s\n", "Attr" );
+    return 0;
+}
+
+int autIfCmd(TokenArr *tokenArr) {
+    printf("%s\n", "IfCmd" );
+    return 0;
+}
+
+int autItrCmd(TokenArr *tokenArr) {
+    printf("%s\n", "ItrCmd" );
+    return 0;
+}
+
+int autInCmd(TokenArr *tokenArr) {
+    printf("%s\n", "InCmd" );
+    return 0;
+}
+
+int autOutCmd(TokenArr *tokenArr) {
+    printf("%s\n", "OutCmd" );
     return 0;
 }
