@@ -1859,13 +1859,13 @@ int autBoolFactor(TokenArr *tokenArr) {
                 if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, "(") == 0) {
                     tokenArr->pos++;
                     state = 2;
+                } else if (autAriExpr(tokenArr)) {
+                    state = 3;
                 } else if (t.type == TYPE_KEYWORD && (strcmp(t.value, "true") == 0 || strcmp(t.value, "false") == 0)) {
                     tokenArr->pos++;
                     state = 1;
                 } else if (autFuncCall(tokenArr) == 1 || autVar(tokenArr) == 1) {
                     state = 1;
-                } else if (autAriExpr(tokenArr)) {
-                    state = 3;
                 } else {
                     syntaxMatch = 0;
                 }
