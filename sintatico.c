@@ -146,9 +146,6 @@ int autProgram(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -204,9 +201,6 @@ int autTypes(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -291,9 +285,6 @@ int autFunctions(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -349,9 +340,6 @@ int autMain(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -407,9 +395,6 @@ int autGlobal(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -461,9 +446,6 @@ int autTypeDef(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -499,9 +481,6 @@ int autName(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -536,9 +515,6 @@ int autCustomType(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -576,9 +552,6 @@ int autType(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -634,9 +607,6 @@ int autStruct(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -719,9 +689,6 @@ int autDecl(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -794,9 +761,7 @@ int autFuncDecl(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
+
   }
 
   if (syntaxMatch == 0) {
@@ -880,9 +845,6 @@ int autFuncImpl(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -944,9 +906,6 @@ int autFuncCmdList(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -966,7 +925,7 @@ int autCmd(TokenArr *tokenArr) {
         switch (state) {
             case 0:
                 if (autDecl(tokenArr) || autAttr(tokenArr) || autIfCmd(tokenArr) || autItrCmd(tokenArr) || autInCmd(tokenArr) || autOutCmd(tokenArr)) {
-                     state = 1;
+                    state = 1;
                 } else {
                     syntaxMatch = 0;
                 }
@@ -981,9 +940,6 @@ int autCmd(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1020,9 +976,6 @@ int autExpression(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1083,9 +1036,6 @@ int autExpression(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1199,9 +1149,6 @@ int autIfCmd(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1283,9 +1230,6 @@ int autItrCmd(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1356,9 +1300,6 @@ int autInCmd(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1432,9 +1373,6 @@ int autOutCmd(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1470,9 +1408,6 @@ int autIntNum(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1512,9 +1447,6 @@ int autAriExpr(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1541,7 +1473,7 @@ int autAriTermA(TokenArr *tokenArr) {
             break;
 
             case 1:
-                if (t.type == TYPE_OPERATOR && (strcmp(t.value, "%%") == 0 || strcmp(t.value, "/") == 0 || strcmp(t.value, "*") == 0)) {
+                if (t.type == TYPE_OPERATOR && (t.value[0] == '%' || strcmp(t.value, "/") == 0 || strcmp(t.value, "*") == 0)) {
                     tokenArr->pos++;
                     state = 0;
                 } else {
@@ -1554,9 +1486,6 @@ int autAriTermA(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1602,9 +1531,6 @@ int autAriTermB(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1629,7 +1555,7 @@ int autAriFactor(TokenArr *tokenArr) {
                 } else if (t.type == TYPE_CONSTANT) {
                     tokenArr->pos++;
                     state = 1;
-                } else if (autVar(tokenArr) == 1 || autFuncCall(tokenArr) == 1) {
+                } else if (autFuncCall(tokenArr) == 1 || autVar(tokenArr) == 1) {
                     state = 1;
                 } else {
                     syntaxMatch = 0;
@@ -1662,9 +1588,6 @@ int autAriFactor(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1704,9 +1627,6 @@ int autBoolExpr(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1746,9 +1666,6 @@ int autBoolTermA(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1794,9 +1711,6 @@ int autBoolTermB(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1835,9 +1749,6 @@ int autBoolTermC(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1913,9 +1824,6 @@ int autBoolFactor(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1953,9 +1861,6 @@ int autAriComp(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -1991,9 +1896,6 @@ int autBoolComp(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -2049,15 +1951,6 @@ int autFuncCall(TokenArr *tokenArr) {
             break;
 
             case 4:
-                if (t.type == TYPE_PUNCTUATOR && strcmp(t.value, ";") == 0) {
-                    tokenArr->pos++;
-                    state = 5;
-                } else {
-                    syntaxMatch = 0;
-                }
-            break;
-
-            case 5:
                 todo("FuncCall");
                 syntaxMatch = 1;
             break;
@@ -2066,9 +1959,6 @@ int autFuncCall(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -2108,9 +1998,6 @@ int autParamList(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
@@ -2183,9 +2070,6 @@ int autVar(TokenArr *tokenArr) {
                 syntaxMatch = 0;
         }
 
-        if (tokenArr->pos == tokenArr->size) {
-            syntaxMatch = 0;
-        }
     }
 
     if (syntaxMatch == 0) {
