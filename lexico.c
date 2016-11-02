@@ -37,7 +37,6 @@ int isPrintableAscii(char c) {
 
 int isKeyword(char string[MAX_KEYWORD_SIZE]) {
 
-
     const char KEYWORDS[KEYWORD_ARR_SIZE][MAX_KEYWORD_SIZE] = {
         {'t', 'y', 'p', 'e', 's'},
         {'i', 'n', 't'},
@@ -60,7 +59,6 @@ int isKeyword(char string[MAX_KEYWORD_SIZE]) {
         {'r', 'e', 't', 'u', 'r', 'n'}
     };
 
-
     int i;
 
     for (i = 0; i < KEYWORD_ARR_SIZE; i++) {
@@ -72,14 +70,14 @@ int isKeyword(char string[MAX_KEYWORD_SIZE]) {
 }
 
 char advance(InputStr *str) {
-    char c = (*str).value[(*str).pos];
-    (*str).pos++;
+    char c = str->value[str->pos];
+    str->pos++;
     return c;
 }
 
 void incrementToken(Token *token, char currentChar) {
-    (*token).value[(*token).size] = currentChar;
-    (*token).size++;
+    token->value[token->size] = currentChar;
+    token->size++;
 }
 
 int getNextToken(Token *token, InputStr *str) {
@@ -87,8 +85,8 @@ int getNextToken(Token *token, InputStr *str) {
 
     char currentChar;
 
-    (*token).size = 0;
-    (*token).value[0] = '\0';
+    token->size = 0;
+    token->value[0] = '\0';
 
     int searchStatus = -1;
 
@@ -115,7 +113,7 @@ int getNextToken(Token *token, InputStr *str) {
                     case '/':
                     case '%':
                     case '*':
-                        (*token).type = TYPE_OPERATOR;
+                        token->type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
                         currentState = STATE_OP_2;
                     break;
@@ -124,31 +122,31 @@ int getNextToken(Token *token, InputStr *str) {
                     case '<':
                     case '=':
                     case '!':
-                        (*token).type = TYPE_OPERATOR;
+                        token->type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
                         currentState = STATE_OP_3;
                     break;
 
                     case '|':
-                        (*token).type = TYPE_OPERATOR;
+                        token->type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
                         currentState = STATE_OP_5;
                     break;
 
                     case '&':
-                        (*token).type = TYPE_OPERATOR;
+                        token->type = TYPE_OPERATOR;
                         incrementToken(token, currentChar);
                         currentState = STATE_OP_6;
                     break;
 
                     case '\"':
-                        (*token).type = TYPE_STRING;
+                        token->type = TYPE_STRING;
                         incrementToken(token, currentChar);
                         currentState = STATE_ST_2;
                     break;
 
                     case '\'':
-                        (*token).type = TYPE_CONSTANT;
+                        token->type = TYPE_CONSTANT;
                         incrementToken(token, currentChar);
                         currentState = STATE_CT_5;
                     break;
@@ -162,18 +160,18 @@ int getNextToken(Token *token, InputStr *str) {
                     case ';':
                     case ',':
                     case '.':
-                        (*token).type = TYPE_PUNCTUATOR;
+                        token->type = TYPE_PUNCTUATOR;
                         incrementToken(token, currentChar);
                         currentState = STATE_PT_2;
                     break;
 
                     default:
                         if (isLetter(currentChar)) {
-                            (*token).type = TYPE_IDENTIFIER;
+                            token->type = TYPE_IDENTIFIER;
                             incrementToken(token, currentChar);
                             currentState = STATE_ID_2;
                         } else if (isDigit(currentChar)) {
-                            (*token).type = TYPE_CONSTANT;
+                            token->type = TYPE_CONSTANT;
                             incrementToken(token, currentChar);
                             currentState = STATE_CT_2;
                         } else {
@@ -197,8 +195,8 @@ int getNextToken(Token *token, InputStr *str) {
                     incrementToken(token, currentChar);
                     currentState = STATE_ID_2;
                 } else {
-                    if (isKeyword((*token).value)) {
-                        (*token).type = TYPE_KEYWORD;
+                    if (isKeyword(token->value)) {
+                        token->type = TYPE_KEYWORD;
                     }
                     searchStatus = 1;
                 }
@@ -223,9 +221,9 @@ int getNextToken(Token *token, InputStr *str) {
                     currentState = STATE_CT_4;
                 } else {
                     // if no digit was found after the '.', remove it from the token and return it, since it is a valid number
-                    (*str).pos--;
-                    (*token).size--;
-                    (*token).value[(*token).size] = '\0';
+                    str->pos--;
+                    token->size--;
+                    token->value[token->size] = '\0';
                     searchStatus = 1;
                 }
             break;
@@ -344,6 +342,6 @@ int getNextToken(Token *token, InputStr *str) {
         }
     }
 
-    (*str).pos--;
+    str->pos--;
     return searchStatus;
 }

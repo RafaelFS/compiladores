@@ -7,10 +7,10 @@ types {
 
 
 functions {
-  int getPosition(int initialPosition, int velocity, int time);
+  int getPosition(int initialPosition; int velocity; int time;);
 } implementation {
   # St = S0 + v * t
-  int getPosition(int initialPosition, int velocity, int time) {
+  int getPosition(int initialPosition; int velocity; int time;) {
     return initialPosition + velocity * time;
   }
 }
